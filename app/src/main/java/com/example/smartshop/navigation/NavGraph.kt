@@ -16,6 +16,7 @@ fun AppNavGraph(navController: NavHostController, loginViewModel: LoginViewModel
         composable("login") {
             LoginScreen(
                 viewModel = loginViewModel,
+                navController = navController, // <-- Pass navController here
                 onLoginSuccess = { navController.navigate("home") }
             )
         }
@@ -23,10 +24,10 @@ fun AppNavGraph(navController: NavHostController, loginViewModel: LoginViewModel
         composable("signup") {
             SignUpScreen(
                 viewModel = loginViewModel,
+                navController = navController, // <-- Pass navController here
                 onSignUpSuccess = { navController.navigate("home") }
             )
         }
-
 
         composable("home") {
             HomeScreen()
