@@ -34,4 +34,19 @@ class LoginViewModel : ViewModel() {
                 }
         }
     }
+
+    fun signUp(email: String, password: String) {
+        _state.value = LoginState.Loading
+
+        viewModelScope.launch {
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    _state.value = LoginState.Success
+                }
+                .addOnFailureListener {
+                    _state.value = LoginState.Error(it.message ?: "Erreur inconnue")
+                }
+        }
+    }
+
 }

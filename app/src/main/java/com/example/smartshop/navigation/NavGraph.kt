@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.smartshop.auth.LoginViewModel
 import com.example.smartshop.ui.theme.LoginScreen
+import com.example.smartshop.ui.theme.SignUpScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController, loginViewModel: LoginViewModel) {
@@ -18,6 +19,14 @@ fun AppNavGraph(navController: NavHostController, loginViewModel: LoginViewModel
                 onLoginSuccess = { navController.navigate("home") }
             )
         }
+
+        composable("signup") {
+            SignUpScreen(
+                viewModel = loginViewModel,
+                onSignUpSuccess = { navController.navigate("home") }
+            )
+        }
+
 
         composable("home") {
             HomeScreen()

@@ -11,19 +11,19 @@ import androidx.navigation.NavController
 import com.example.smartshop.auth.LoginViewModel
 
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     viewModel: LoginViewModel,
-    navController: NavController, // <-- Add NavController here
-    onLoginSuccess: () -> Unit
+    navController: NavController,
+    onSignUpSuccess: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState() // écouter l’état du ViewModel
+    val state by viewModel.state.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     LaunchedEffect(state) {
         if (state is LoginViewModel.LoginState.Success) {
-            onLoginSuccess()
+            onSignUpSuccess()
         }
     }
 
@@ -31,14 +31,11 @@ fun LoginScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-
         Column(
             modifier = Modifier.padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Text(text = "Connexion", style = MaterialTheme.typography.headlineMedium)
-
+            Text(text = "Inscription", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedTextField(
@@ -61,10 +58,10 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = { viewModel.login(email, password) },
+                onClick = { viewModel.signUp(email, password) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Se connecter")
+                Text("S'inscrire")
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -84,9 +81,8 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Navigate to SignUp
-            TextButton(onClick = { navController.navigate("signup") }) {
-                Text("Créer un compte")
+            TextButton(onClick = { navController.navigate("login") }) {
+                Text("Déjà un compte ? Se connecter")
             }
         }
     }
