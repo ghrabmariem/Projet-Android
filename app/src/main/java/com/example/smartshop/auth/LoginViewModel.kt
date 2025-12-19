@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginViewModel : ViewModel() {
 
@@ -22,16 +23,26 @@ class LoginViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     fun login(email: String, password: String) {
+        if (email.isBlank() || password.isBlank()) {
+            _state.value = LoginState.Error("Veuillez remplir tous les champs")
+            return
+        }
+
         _state.value = LoginState.Loading
 
         viewModelScope.launch {
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener {
-                    _state.value = LoginState.Success
-                }
-                .addOnFailureListener {
-                    _state.value = LoginState.Error(it.message ?: "Erreur inconnue")
-                }
+            try {
+                auth.signInWithEmailAndPassword(email, password).await()
+                _state.value = LoginState.Success
+            } catch (e: Exception) {
+                _state.value = LoginState.Error(
+                    e.message ?: "Erreur de connexion"
+                )
+            }
         }
+    }
+
+    fun resetState() {
+        _state.value = LoginState.Idle
     }
 }

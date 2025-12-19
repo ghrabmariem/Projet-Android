@@ -1,4 +1,4 @@
-package com.example.smartshop.ui.theme
+package com.example.smartshop.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,10 +12,10 @@ import com.example.smartshop.auth.LoginViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToSignUp: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState() // écouter l’état du ViewModel
-
+    val state by viewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -29,54 +29,81 @@ fun LoginScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-
         Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                text = "Connexion",
+                style = MaterialTheme.typography.headlineMedium
+            )
 
-            Text(text = "Connexion", style = MaterialTheme.typography.headlineMedium)
-
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state !is LoginViewModel.LoginState.Loading
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Mot de passe") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state !is LoginViewModel.LoginState.Loading
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = { viewModel.login(email, password) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state !is LoginViewModel.LoginState.Loading
             ) {
-                Text("Se connecter")
+                if (state is LoginViewModel.LoginState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Se connecter")
+                }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(
+                onClick = onNavigateToSignUp,
+                enabled = state !is LoginViewModel.LoginState.Loading
+            ) {
+                Text("Pas encore de compte ? S'inscrire")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             when (state) {
-                is LoginViewModel.LoginState.Loading ->
-                    CircularProgressIndicator()
-
-                is LoginViewModel.LoginState.Error ->
-                    Text(
-                        text = (state as LoginViewModel.LoginState.Error).message,
-                        color = MaterialTheme.colorScheme.error
-                    )
-
+                is LoginViewModel.LoginState.Error -> {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Text(
+                            text = (state as LoginViewModel.LoginState.Error).message,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
                 else -> {}
             }
         }
